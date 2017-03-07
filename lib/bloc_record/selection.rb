@@ -38,7 +38,7 @@ module Selection
     init_object_from_row(row)
   end
 
-  def find_each(*options = {})
+  def find_each(options = {}, &block)
     if options.nil?
       items = connection.execute <<-SQL
         SELECT #{columns.join ","} FROM #{table}
@@ -55,7 +55,7 @@ module Selection
     end
   end
 
-  def find_in_batches(options = {})
+  def find_in_batches(options = {}, &block)
     items = connection.execute <<-SQL
       SELECT #{columns.join ","} FROM #{table}
       LIMIT #{options.size} OFFSET #{options.start};
