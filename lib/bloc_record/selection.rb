@@ -85,6 +85,21 @@ module Selection
     rows_to_array(rows)
   end
 
+  def where(*args)
+    if args.count > 1
+      expression = args.shift
+      params = args
+    end
+
+    sql = <<-SQL
+      SELECT #{columns.join ","} FROM #{table}
+      WHERE #{expression};
+    SQL
+
+    rows = connection.execute(sql, params)
+    rows_to_array(rows)
+  end
+
   private
   def init_object_from_row(row)
     if row
