@@ -38,16 +38,18 @@ module Selection
     init_object_from_row(row)
   end
 
-  def find_each(options = {}, &block)
+  def find_each(options)
     if options.nil?
       items = connection.execute <<-SQL
         SELECT #{columns.join ","} FROM #{table}
       SQL
-    else
+    elsif options.class.kind_of Hash
       items = connection.execute <<-SQL
         SELECT #{columns.join ","} FROM #{table}
         LIMIT #{options.size} OFFSET #{options.start};
       SQL
+    else
+      throw "Ya broke it."
     end
 
     items.each do |item|
@@ -55,14 +57,17 @@ module Selection
     end
   end
 
-  def find_in_batches(options = {}, &block)
-    items = connection.execute <<-SQL
-      SELECT #{columns.join ","} FROM #{table}
-      LIMIT #{options.size} OFFSET #{options.start};
-    SQL
+  def find_in_batches(options)
+    # find_in_batches(start: 200) find_in_batches(batch_size: 100)
+    if !options.size.nil? && !options.start.nil?
+      items = connection.execute <<-SQL
+        SELECT #{columns.join ","} FROM #{table}
+        LIMIT #{options.size} OFFSET #{options.start};
+      SQL
+    end
 
     if items.nil?
-      nil
+      throw "Sorry please pass in a Hash with size and start values."
     else
       yield rows_to_array(items)
     end
