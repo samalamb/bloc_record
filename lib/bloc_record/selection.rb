@@ -74,12 +74,15 @@ module Selection
   end
 
   def self.method_missing(method_sym, *args)
+
     if method_sym.to_s =~ /find_by/
       if args.length > 1
         puts "please provide only one argument"
         method_missing(method_sym, *args)
       end
 
+      attribute = nil
+      value = nil
       attribute = method_sym.to_s[7...method.length].downcase
       attribute.slice!(0) if attribute[0] == "_"
 
