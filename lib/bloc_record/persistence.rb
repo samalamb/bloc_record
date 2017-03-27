@@ -53,10 +53,17 @@ module Persistence
     end
 
     def update(ids, updates)
-      updates = BlocRecord::Utility.convert_keys(updates)
-      updates.delete "id"
+      if ids.class = Array
+        ids.each_with_index do |id, index|
+          update(id, updates[index])
+        end
+      else
+        updates = BlocRecord::Utility.convert_keys(updates)
+        updates.delete "id"
+        updates_array = updates.map { |key, value| "#{key}=#{BlocRecord::Utility.sql_strings(value)}" }
+      end
 
-      updates_array = updates.map { |key, value| "#{key}=#{BlocRecord::Utility.sql_strings(value)}" }
+
 
       if ids.class == Fixnum
         where_clause = "WHERE id = #{ids};"
