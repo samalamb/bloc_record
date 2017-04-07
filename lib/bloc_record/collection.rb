@@ -6,5 +6,11 @@ module BlocRecord
 
       self.any? ? self.first.class.update(ids, updates) : false
     end
+
+    def destroy_all
+      ids = self.map(&:id)
+
+      self.any? ? self.first.class.destroy_all(ids) : false
+    end
   end
 end
