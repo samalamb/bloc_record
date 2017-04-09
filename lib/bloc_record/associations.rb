@@ -35,5 +35,19 @@ module Associations
         end
       end
     end
+
+    def has_one
+      define_method(association) do
+        rows = self.class.connection.execute <<-SQL
+          SELECT * FROM #{association.to_s.singularize}
+          WHERE #{self.class.table}_id = #{self.id}
+        SQL
+
+        class_name = association.to_s.classify.constantize
+
+        if row
+          class_name.new(Hash[columns.zip(row)])
+        end
+    end
   end
 end
