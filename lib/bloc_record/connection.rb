@@ -1,4 +1,17 @@
 require 'sqlite3'
+require 'pg'
+
+module PG
+  class Connection
+    def execute(*args)
+      self.exec(*args)
+    end
+
+    def get_first_row(*args)
+      self.exec(*args)[0]
+    end
+  end
+end
 
 module Connection
   def connection
